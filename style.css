@@ -1,0 +1,334 @@
+:root {
+  --primary-color: #8b4513; /* Saddle Brown */
+  --primary-hover: #5d4037;
+  --bg-color: #f5f5f5;
+  --wood-dark: #3e2723;
+  --wood-light: #d7ccc8;
+  --paper-bg: #fdf6e3;
+  --text-color: #2c1810;
+  --text-muted: #6d4c41;
+  --border-color: #d7ccc8;
+  --accent-color: #4e342e;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  /* Use system fonts as fallback for offline use */
+  font-family: "Noto Serif JP", "Sawarabi Mincho", "Hiragino Mincho ProN", "MS PMincho", serif;
+  background-color: var(--bg-color);
+  background-image: 
+    linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  color: var(--text-color);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Wood texture background - Replaced external URL with CSS pattern */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    repeating-linear-gradient(45deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 2px, transparent 2px, transparent 4px),
+    linear-gradient(to right, #d7ccc8 2px, transparent 2px) 0 0 / 100px 100%;
+  background-color: #efebe9;
+  z-index: -1;
+  opacity: 0.5;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+  animation: fadeIn 1s ease-out;
+}
+
+h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--wood-dark);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  font-style: italic;
+}
+
+/* Upload Section - Wooden Box Style */
+.upload-section {
+  background: #fff;
+  /* CSS-based wood pattern */
+  background-image: 
+    repeating-linear-gradient(to bottom, transparent, transparent 40px, rgba(0,0,0,0.03) 40px, rgba(0,0,0,0.03) 41px),
+    repeating-linear-gradient(to right, transparent, transparent 100px, rgba(0,0,0,0.03) 100px, rgba(0,0,0,0.03) 101px);
+  border: 8px solid var(--wood-dark);
+  border-radius: 4px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2), inset 0 0 100px rgba(0,0,0,0.05);
+  padding: 2rem 4rem 4rem 4rem;
+  text-align: center;
+  margin-bottom: 3rem;
+  transition: transform 0.3s ease;
+}
+
+.upload-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--wood-light);
+  padding-bottom: 1rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: var(--wood-dark);
+  color: #fff;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.upload-area {
+  border: 3px dashed var(--wood-light);
+  background: rgba(255,255,255,0.8);
+  border-radius: 8px;
+  padding: 4rem;
+  cursor: pointer;
+}
+
+.paste-area textarea {
+  width: 100%;
+  height: 200px;
+  padding: 1rem;
+  border: 2px solid var(--wood-light);
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 0.9rem;
+  background: #fff;
+  resize: vertical;
+}
+
+/* Editor Layout */
+.editor-container {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 3rem;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.editor-container.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Log Preview - Paper Style */
+.log-preview {
+  background: var(--paper-bg);
+  /* CSS paper texture */
+  background-image: linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 100% 2em;
+  border-radius: 2px;
+  box-shadow: 2px 5px 20px rgba(0,0,0,0.1), 0 0 50px rgba(0,0,0,0.05) inset;
+  padding: 3rem;
+  max-height: 85vh;
+  overflow-y: auto;
+  border: 1px solid #e0d5c1;
+}
+
+/* Chat Entry Styling */
+.chat-entry {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.chat-bubble {
+  background: #fff;
+  padding: 1.2rem 1.5rem;
+  border-radius: 4px 20px 20px 20px;
+  border: 1px solid #ddd;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.05);
+  display: inline-block;
+  max-width: 90%;
+  cursor: pointer;
+}
+
+.chat-content {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.chat-image {
+  margin-top: 1rem;
+  border-radius: 4px;
+  max-width: 100%;
+}
+
+.dice-success {
+  color: #1a73e8 !important; /* Blue */
+  font-weight: bold;
+}
+
+.dice-failure {
+  color: #d93025 !important; /* Red */
+  font-weight: bold;
+}
+
+/* Control Panel - Wood Board Style */
+.control-panel {
+  background: var(--wood-dark);
+  background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 50px 100%;
+  border-radius: 8px;
+  padding: 2rem;
+  color: #efebe9;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  position: sticky;
+  top: 2rem;
+  height: fit-content;
+}
+
+.control-panel label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  color: #d7ccc8;
+  font-weight: bold;
+}
+
+.control-panel input[type="text"],
+.control-panel textarea {
+  width: 100%;
+  padding: 0.8rem;
+  background: var(--paper-bg);
+  border: 1px solid #c2b9a7;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #2c1810;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s;
+  margin-bottom: 1.2rem;
+}
+
+.control-panel input[type="text"]:focus,
+.control-panel textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 0 8px rgba(139, 69, 19, 0.3);
+}
+
+.control-panel input[type="color"] {
+  height: 45px;
+  border: 2px solid #c2b9a7;
+  cursor: pointer;
+}
+
+.btn {
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 1rem;
+  font-weight: 700;
+  width: 100%;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #5d4037;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #5d4037;
+}
+
+.btn-secondary {
+  background: #a1887f;
+  box-shadow: 0 4px 0 #6d4c41;
+}
+
+
+
+/* Mobile Responsiveness */
+@media (max-width: 900px) {
+  .editor-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .control-panel {
+    position: static;
+    order: -1; /* Controls on top for mobile */
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .upload-area {
+    padding: 2rem;
+  }
+  
+  .log-preview {
+    padding: 1.5rem;
+  }
+  
+  .chat-bubble {
+    max-width: 100%;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--wood-dark); }
+::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 5px; }

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cocofolia Log Editor - Natural Wood Style (Offline Ready)</title>
+    <!-- Removed External CDNs for Offline Usage -->
+    <style>
+        /* Inline icons styling */
+        .icon { width: 1.2em; height: 1.2em; vertical-align: middle; fill: currentColor; margin-right: 0.5rem; }
+    </style>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- SVG Icon Sprite -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="icon-scroll" viewBox="0 0 24 24"><path d="M7 1h10a2 2 0 0 1 2 2v18a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2zm0 2v10h10V3H7zm0 12v4a2 2 0 0 0 1.5 1.5H15.5a2 2 0 0 0 1.5-1.5v-4H7z"/></symbol>
+        <symbol id="icon-folder" viewBox="0 0 24 24"><path d="M10 4l2 2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h6z"/></symbol>
+        <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></symbol>
+        <symbol id="icon-image" viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></symbol>
+        <symbol id="icon-copy" viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></symbol>
+        <symbol id="icon-save" viewBox="0 0 24 24"><path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zm-5 16a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm3-10H5V5h10v4z"/></symbol>
+        <symbol id="icon-export" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm1 14H9v-2h6v2zm0-4H9v-2h6v2zm-3-5V3.5L18.5 9H12z"/></symbol>
+    </svg>
+    <div class="container">
+        <header>
+            <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; width: 100%;">
+                <div style="flex: 1;"></div>
+                <div style="flex: 2; text-align: center;">
+                    <h1>Cocofolia Log Editor</h1>
+                </div>
+                <div style="flex: 1; text-align: right;">
+                    <button id="back-to-top-btn" class="btn btn-secondary" style="display: none; width: auto; padding: 0.6rem 1.2rem; font-size: 0.9rem;">
+                         トップに戻る
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <section class="upload-section" id="upload-section">
+            <div class="upload-tabs">
+                <button class="tab-btn active" onclick="switchUploadTab('file-tab')">ファイルを読み込む</button>
+                <button class="tab-btn" onclick="switchUploadTab('paste-tab')">HTMLを直接貼り付ける</button>
+            </div>
+
+            <div id="file-tab" class="tab-content active">
+                <div class="upload-area" id="drop-area">
+                    <svg class="icon" style="width: 4rem; height: 4rem;"><use xlink:href="#icon-scroll"></use></svg>
+                    <h3>ログ(HTML) または プロジェクト(JSON) を読み込む</h3>
+                    <p>ファイルをここにドロップ または クリック</p>
+                </div>
+            </div>
+
+            <div id="paste-tab" class="tab-content">
+                <div class="paste-area">
+                    <textarea id="paste-input" placeholder="ここにココフォリアのログHTMLを貼り付けてください..."></textarea>
+                    <button class="btn" id="parse-paste-btn" style="margin-top: 1rem; background: #5d4037;">
+                        <svg class="icon"><use xlink:href="#icon-scroll"></use></svg> 貼り付けたHTMLを読み込む
+                    </button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem; display: flex; justify-content: center;">
+                <button class="btn btn-secondary" style="width: auto; padding: 0.8rem 3rem; background: #5d4037;" id="open-btn">
+                    <svg class="icon"><use xlink:href="#icon-folder"></use></svg> ファイルを開く (HTML / JSON)
+                </button>
+            </div>
+
+            <div class="usage-guide" style="margin-top: 3rem; text-align: left; background: rgba(255,255,255,0.5); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--wood-light); font-size: 0.9rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--wood-dark);">📖 つかいかた</h4>
+                <ul style="padding-left: 1.2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                    <li><b>読み込み</b>: HTMLファイルをドロップするか、コードを貼り付けます。</li>
+                    <li><b>編集</b>: 左側のログを選んで、右側のパネルで修正・画像挿入。</li>
+                    <li><b>挿入</b>: 「追加位置」を選んでから「新規会話」で middle 挿入も可能。</li>
+                    <li><b>保存</b>: .jsonで保存しておけば、後から再開できます。</li>
+                    <li><b>書き出し</b>: 完成したら「HTMLを書き出す」でファイル保存！</li>
+                    <li><b>便利機能</b>: ダイス結果の自動色付け / Ctrl+Z で元に戻す。</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="editor-container" id="editor-container">
+            <div class="log-preview-container" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <button class="btn" id="add-new-btn" style="background: #5d4037; width: auto; padding: 0.8rem 2rem; margin-bottom: 0;">
+                        <svg class="icon"><use xlink:href="#icon-plus"></use></svg> 新規会話を追加
+                    </button>
+                    <div style="font-size: 0.9rem; color: var(--text-muted); display: flex; gap: 0.5rem; align-items: center;">
+                         追加位置: 
+                        <label><input type="radio" name="insert-pos" value="end" checked> 末尾</label>
+                        <label><input type="radio" name="insert-pos" value="after"> 選択行の次</label>
+                    </div>
+                </div>
+                <div class="log-preview" id="log-preview">
+                    <!-- Log entries rendered here -->
+                </div>
+            </div>
+
+            <aside class="control-panel">
+                <div class="panel-title">編集パネル</div>
+                
+                <div id="editing-indicator" style="margin-bottom: 1.5rem; text-align: center; color: #d7ccc8;">
+                    メッセージを選択するか「新規追加」をクリック
+                </div>
+                
+                <div id="editor-controls" style="display: none;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <label>名前</label>
+                            <input type="text" id="msg-name" list="character-names">
+                            <datalist id="character-names"></datalist>
+                        </div>
+                        <div>
+                            <label>タブ</label>
+                            <input type="text" id="msg-tab">
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label>文字色</label>
+                        <input type="color" id="msg-color">
+                    </div>
+
+                    <label>メッセージ</label>
+                    <textarea id="msg-text" rows="4"></textarea>
+                    
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <button class="btn" onclick="document.getElementById('image-input').click()" style="background: #a1887f; padding: 0.7rem; font-size: 0.9rem;">
+                            <svg class="icon"><use xlink:href="#icon-image"></use></svg> 画像挿入
+                        </button>
+                        <button class="btn" id="remove-image-btn" style="background: #6d4c41; padding: 0.7rem; font-size: 0.9rem;">
+                            <svg class="icon"><use xlink:href="#icon-plus" style="transform: rotate(45deg);"></use></svg> 画像を消去
+                        </button>
+                        <button class="btn" id="duplicate-msg-btn" style="background: #8d6e63; padding: 0.7rem; font-size: 0.9rem;">
+                            <svg class="icon"><use xlink:href="#icon-copy"></use></svg> 複製
+                        </button>
+                    </div>
+                    <input type="file" id="image-input" accept="image/*" style="display: none;">
+                    
+                    <button class="btn" id="save-msg-btn">保存して反映</button>
+                    <button class="btn btn-secondary" id="cancel-edit-btn">キャンセル</button>
+                    
+                    <div style="margin-top: 2.5rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                        <button class="btn" style="background: #791e1e; box-shadow: 0 4px 0 #4a1111;" id="delete-msg-btn">この行を削除</button>
+                    </div>
+                </div>
+
+                <div class="project-controls">
+                    <div class="panel-title" style="font-size: 1.1rem; margin-top: 1rem;">プロジェクト情報</div>
+                    <div style="margin-bottom: 1rem;">
+                        <label>プロジェクト名</label>
+                        <input type="text" id="project-name-input" placeholder="セッション名など" style="margin-bottom: 0.5rem;">
+                        <label>メモ</label>
+                        <textarea id="project-memo-input" rows="3" placeholder="備忘録など" style="font-size: 0.85rem;"></textarea>
+                    </div>
+
+                    <div class="panel-title" style="font-size: 1.1rem; margin-top: 1rem;">保存と機能</div>
+                    <button class="btn btn-secondary" id="undo-btn">
+                        <svg class="icon" style="transform: scaleX(-1);"><use xlink:href="#icon-export" style="filter: hue-rotate(90deg);"></use></svg> 元に戻す (Ctrl+Z)
+                    </button>
+                    <button class="btn btn-secondary" id="save-project-btn">
+                        <svg class="icon"><use xlink:href="#icon-save"></use></svg> プロジェクトを保存 (.json)
+                    </button>
+                    <button class="btn" id="export-html-btn" style="background: #4e342e;">
+                        <svg class="icon"><use xlink:href="#icon-export"></use></svg> 最終HTMLを書き出す
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; color: white;">
+        <div style="border: 6px solid #d7ccc8; border-top: 6px solid #8b4513; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin-bottom: 1.5rem;"></div>
+        <p style="font-size: 1.2rem; font-weight: bold;">職人が加工中...</p>
+    </div>
+
+    <style> @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } } </style>
+
+
+    <input type="file" id="file-input" accept=".html,.json" style="display: none;">
+    <script src="app.js"></script>
+</body>
+</html>
