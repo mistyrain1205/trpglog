@@ -1,4 +1,4 @@
-// Cocofolia Log Editor - Core Logic (Natural Wood Style)
+// Cocofolia Log Editor - Core Logic (Ultimate Theme Edition)
 
 let logEntries = [];
 let selectedEntryIndex = null;
@@ -9,6 +9,7 @@ const MAX_UNDO = 20;
 
 let projectName = "";
 let projectMemo = "";
+let currentTheme = "wood";
 
 // DOM Elements
 const uploadSection = document.getElementById('upload-section');
@@ -40,9 +41,9 @@ const undoBtn = document.getElementById('undo-btn');
 
 const projectNameInput = document.getElementById('project-name-input');
 const projectMemoInput = document.getElementById('project-memo-input');
+const themeSelect = document.getElementById('theme-select');
 
 const openBtn = document.getElementById('open-btn');
-
 const loadingOverlay = document.getElementById('loading-overlay');
 
 // --- Initialization ---
@@ -58,9 +59,13 @@ window.onload = () => {
                 logEntries = data.entries || [];
                 projectName = data.name || "";
                 projectMemo = data.memo || "";
+                currentTheme = data.theme || "wood";
+                
                 projectNameInput.value = projectName;
                 projectMemoInput.value = projectMemo;
+                themeSelect.value = currentTheme;
             }
+            applyTheme(currentTheme);
             if (logEntries.length > 0) {
                 updateCharacterList();
                 showEditor();
@@ -73,10 +78,23 @@ function autoSave() {
     const data = {
         entries: logEntries,
         name: projectNameInput.value,
-        memo: projectMemoInput.value
+        memo: projectMemoInput.value,
+        theme: themeSelect.value
     };
     localStorage.setItem('cocofolia_editor_session', JSON.stringify(data));
 }
+
+function applyTheme(theme) {
+    document.body.classList.remove('theme-midnight', 'theme-parchment', 'theme-forest', 'theme-sakura', 'theme-ocean');
+    if (theme !== 'wood') {
+        document.body.classList.add(`theme-${theme}`);
+    }
+}
+
+themeSelect.onchange = () => {
+    applyTheme(themeSelect.value);
+    autoSave();
+};
 
 projectNameInput.oninput = autoSave;
 projectMemoInput.oninput = autoSave;
@@ -87,7 +105,8 @@ function saveStateForUndo() {
     undoStack.push(JSON.stringify({
         entries: logEntries,
         name: projectNameInput.value,
-        memo: projectMemoInput.value
+        memo: projectMemoInput.value,
+        theme: themeSelect.value
     }));
     if (undoStack.length > MAX_UNDO) undoStack.shift();
 }
@@ -98,7 +117,11 @@ function undo() {
     logEntries = data.entries;
     projectNameInput.value = data.name;
     projectMemoInput.value = data.memo;
+    themeSelect.value = data.theme || "wood";
+    
+    applyTheme(themeSelect.value);
     renderLog();
+    
     if (selectedEntryIndex !== null) {
         if (selectedEntryIndex >= logEntries.length) selectedEntryIndex = null;
         else selectEntry(selectedEntryIndex);
@@ -118,12 +141,10 @@ window.addEventListener('keydown', (e) => {
 function renderContent(text) {
     let escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     
-    // Dice results
     escaped = escaped
         .replace(/(＞\s*成功)/g, '<span class="dice-success">$1</span>')
         .replace(/(＞\s*失敗)/g, '<span class="dice-failure">$1</span>');
     
-    // Markdown
     escaped = escaped
         .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
         .replace(/__(.*?)__/g, '<b>$1</b>')
@@ -236,7 +257,12 @@ function renderLog() {
         const bubble = document.createElement('div');
         bubble.className = 'chat-bubble';
         bubble.onclick = () => selectEntry(index);
-        if (selectedEntryIndex === index) bubble.style.borderColor = 'var(--primary-color)';
+        
+        if (selectedEntryIndex === index) {
+            bubble.classList.add('selected');
+            bubble.style.borderColor = 'var(--accent-color)';
+            bubble.style.borderWidth = '2px';
+        }
 
         const content = document.createElement('div');
         content.className = 'chat-content';
@@ -289,7 +315,7 @@ addNewBtn.onclick = () => {
     editorControls.style.display = 'block';
     deleteMsgBtn.parentElement.style.display = 'none';
     
-    document.querySelectorAll('.chat-bubble').forEach(el => el.style.borderColor = '#ddd');
+    renderLog();
 };
 
 saveMsgBtn.onclick = () => {
@@ -304,9 +330,9 @@ saveMsgBtn.onclick = () => {
 
     if (isNewEntryMode) {
         const insertPos = document.querySelector('input[name="insert-pos"]:checked').value;
-        const selectedIdx = parseInt(document.querySelector('.chat-entry[style*="var(--primary-color)"]')?.dataset.index);
+        const selectedIdx = selectedEntryIndex;
         
-        if (insertPos === 'after' && !isNaN(selectedIdx)) {
+        if (insertPos === 'after' && selectedIdx !== null) {
             logEntries.splice(selectedIdx + 1, 0, entryData);
             selectedEntryIndex = selectedIdx + 1;
         } else {
@@ -315,10 +341,7 @@ saveMsgBtn.onclick = () => {
         }
         isNewEntryMode = false;
     } else {
-        logEntries[selectedEntryIndex] = {
-            ...logEntries[selectedEntryIndex],
-            ...entryData
-        };
+        logEntries[selectedEntryIndex] = { ...logEntries[selectedEntryIndex], ...entryData };
     }
     
     updateCharacterList();
@@ -363,7 +386,6 @@ deleteMsgBtn.onclick = () => {
     }
 };
 
-// Helper to convert style color to hex for input[type=color]
 function rgbToHex(color) {
     if (!color || color.startsWith('#')) return color || '#333333';
     const rgb = color.match(/\d+/g);
@@ -387,13 +409,8 @@ imageInput.onchange = async (e) => {
             logEntries[selectedEntryIndex].image = optimizedDataUrl;
             renderLog();
         }
-    } catch (err) {
-        console.error(err);
-        alert('画像の処理に失敗しました。');
-    } finally {
-        loadingOverlay.style.display = 'none';
-        imageInput.value = '';
-    }
+    } catch (err) { console.error(err); alert('画像の処理に失敗しました。'); }
+    finally { loadingOverlay.style.display = 'none'; imageInput.value = ''; }
 };
 
 async function optimizeImage(file, maxWidth = 1000, quality = 0.8) {
@@ -405,12 +422,8 @@ async function optimizeImage(file, maxWidth = 1000, quality = 0.8) {
                 const canvas = document.createElement('canvas');
                 let width = img.width;
                 let height = img.height;
-                if (width > maxWidth) {
-                    height = (maxWidth / width) * height;
-                    width = maxWidth;
-                }
-                canvas.width = width;
-                canvas.height = height;
+                if (width > maxWidth) { height = (maxWidth / width) * height; width = maxWidth; }
+                canvas.width = width; canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
                 resolve(canvas.toDataURL('image/jpeg', quality));
@@ -427,7 +440,8 @@ saveProjectBtn.onclick = () => {
     const data = {
         entries: logEntries,
         name: projectNameInput.value,
-        memo: projectMemoInput.value
+        memo: projectMemoInput.value,
+        theme: themeSelect.value
     };
     const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -440,11 +454,9 @@ saveProjectBtn.onclick = () => {
 // --- Unified Open Logic ---
 
 openBtn.onclick = () => fileInput.click();
-
 fileInput.onchange = (e) => {
     const file = e.target.files[0];
     if (file) handleGenericFile(file);
-    // Reset value so same file can be opened again
     fileInput.value = '';
 };
 
@@ -456,26 +468,22 @@ function handleGenericFile(file) {
             try {
                 saveStateForUndo();
                 const data = JSON.parse(e.target.result);
-                if (Array.isArray(data)) {
-                    logEntries = data;
-                } else {
+                if (Array.isArray(data)) { logEntries = data; }
+                else {
                     logEntries = data.entries || [];
                     projectNameInput.value = data.name || "";
                     projectMemoInput.value = data.memo || "";
+                    themeSelect.value = data.theme || "wood";
                 }
+                applyTheme(themeSelect.value);
                 updateCharacterList();
                 showEditor();
             } catch(err) { alert('プロジェクトファイルの読み込みに失敗しました。'); }
         } else if (extension === 'html') {
             logEntries = parseCocofoliaLog(e.target.result);
-            if (logEntries.length === 0) {
-                alert('ログの解析に失敗しました。');
-                return;
-            }
+            if (logEntries.length === 0) { alert('ログの解析に失敗しました。'); return; }
             showEditor();
-        } else {
-            alert('対応していないファイル形式です (.html または .json を選択してください)');
-        }
+        } else { alert('対応していないファイル形式です (.html または .json を選択してください)'); }
     };
     reader.readAsText(file);
 }
@@ -493,6 +501,94 @@ exportHtmlBtn.onclick = () => {
 };
 
 function generateExportHtml() {
+    const theme = themeSelect.value;
+    let themeVars = '';
+    let bodyClass = `theme-${theme}`;
+    let bgStyle = '';
+
+    if (theme === 'midnight') {
+        themeVars = `
+            --bg-color: #0f172a;
+            --paper-bg: rgba(30, 41, 59, 0.7);
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --bubble-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+        `;
+        bgStyle = `
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
+                linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+        `;
+    } else if (theme === 'parchment') {
+        themeVars = `
+            --bg-color: #e0d0b0;
+            --paper-bg: #f5f0e1;
+            --text-color: #3e2723;
+            --text-muted: #795548;
+            --bubble-bg: #fffcf5;
+            --border-color: #c0ab8c;
+        `;
+        bgStyle = `
+            background: radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px);
+            background-size: 6px 6px;
+        `;
+    } else if (theme === 'forest') {
+        themeVars = `
+            --bg-color: #064e3b;
+            --paper-bg: #ecfdf5;
+            --text-color: #064e3b;
+            --text-muted: #065f46;
+            --bubble-bg: #ffffff;
+            --border-color: #a7f3d0;
+        `;
+        bgStyle = `
+            background: radial-gradient(circle at 10px 10px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+        `;
+    } else if (theme === 'sakura') {
+        themeVars = `
+            --bg-color: #fff1f2;
+            --paper-bg: #fff5f7;
+            --text-color: #881337;
+            --text-muted: #be185d;
+            --bubble-bg: #ffffff;
+            --border-color: #fce7f3;
+        `;
+        bgStyle = `
+            background: radial-gradient(circle, #fbcfe8 2px, transparent 0);
+            background-size: 32px 32px;
+        `;
+    } else if (theme === 'ocean') {
+        themeVars = `
+            --bg-color: #0c4a6e;
+            --paper-bg: #f0f9ff;
+            --text-color: #0c4a6e;
+            --text-muted: #0369a1;
+            --bubble-bg: #ffffff;
+            --border-color: #bae6fd;
+        `;
+        bgStyle = `
+            background: radial-gradient(ellipse at 50% 100%, rgba(255,255,255,0.05) 20%, transparent 80%);
+            background-size: 100px 40px;
+        `;
+    } else {
+        bodyClass = '';
+        themeVars = `
+            --bg-color: #efebe9;
+            --paper-bg: #fdf6e3;
+            --text-color: #2c1810;
+            --text-muted: #6d4c41;
+            --bubble-bg: #ffffff;
+            --border-color: #d7ccc8;
+        `;
+        bgStyle = `
+            background: repeating-linear-gradient(45deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 2px, transparent 2px, transparent 4px),
+                        linear-gradient(to right, #d7ccc8 2px, transparent 2px) 0 0 / 100px 100%;
+        `;
+    }
+
     let entriesHtml = logEntries.map(entry => `
         <div class="msg-box">
             <div class="msg-meta"><span class="msg-tab">[${entry.tab}]</span> <span class="msg-name" style="color:${entry.color}">${entry.name}</span></div>
@@ -512,90 +608,24 @@ function generateExportHtml() {
     <title>${projectNameInput.value || 'TRPG Replay Log'}</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap');
-        
-        body { 
-            background: #fdf6e3; 
-            color: #2c1810; 
-            font-family: 'Noto Serif JP', serif; 
-            margin: 0;
-            padding: 40px 20px;
-            background-image: linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
-            background-size: 100% 2em;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .msg-box { 
-            margin-bottom: 30px; 
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .msg-meta { 
-            font-size: 0.85em; 
-            margin-bottom: 8px; 
-            color: #6d4c41; 
-            display: flex;
-            align-items: center;
-        }
-
-        .msg-tab { 
-            background: #d4c1b4; 
-            padding: 2px 8px; 
-            border-radius: 4px; 
-            font-weight: normal; 
-            margin-right: 10px;
-            box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-
-        .msg-name { 
-            font-weight: bold; 
-            font-size: 1.1em;
-            text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
-        }
-
-        .msg-bubble { 
-            background: #fff; 
-            padding: 1.5rem 1.8rem; 
-            border-radius: 4px 20px 20px 20px; 
-            border: 1px solid #dcd0c0; 
-            box-shadow: 4px 4px 10px rgba(0,0,0,0.05); 
-            display: inline-block; 
-            max-width: 90%;
-            line-height: 1.7;
-        }
-
-        .msg-text {
-            font-size: 1.1rem;
-            word-wrap: break-word;
-        }
-
-        .msg-img { 
-            max-width: 100%; 
-            border-radius: 6px; 
-            margin-top: 15px; 
-            display: block; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
-        }
-
-        .dice-success { color: #1a73e8 !important; font-weight: bold; }
-        .dice-failure { color: #d93025 !important; font-weight: bold; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 600px) {
-            body { padding: 20px 10px; }
-            .msg-bubble { max-width: 95%; padding: 1.2rem; }
-            .msg-text { font-size: 1rem; }
-        }
+        :root { ${themeVars} }
+        body { background: var(--bg-color); color: var(--text-color); font-family: 'Noto Serif JP', serif; margin: 0; padding: 40px 20px; position: relative; min-height: 100vh; overflow-x: hidden; }
+        body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; ${bgStyle} }
+        .container { max-width: 800px; margin: 0 auto; position: relative; }
+        .msg-box { margin-bottom: 30px; animation: fadeIn 0.5s ease-out; }
+        .msg-meta { font-size: 0.85em; margin-bottom: 8px; color: var(--text-muted); display: flex; align-items: center; }
+        .msg-tab { background: rgba(128,128,128,0.05); padding: 2px 8px; border-radius: 4px; margin-right: 10px; border: 1px solid var(--border-color); }
+        .msg-name { font-weight: bold; font-size: 1.1em; text-shadow: 1px 1px 1px rgba(255,255,255,0.1); }
+        .msg-bubble { background: var(--bubble-bg); backdrop-filter: blur(10px); padding: 1.5rem 1.8rem; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 4px 4px 15px rgba(0,0,0,0.1); display: inline-block; max-width: 90%; line-height: 1.7; }
+        .msg-text { font-size: 1.1rem; word-wrap: break-word; }
+        .msg-img { max-width: 100%; border-radius: 8px; margin-top: 15px; display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .dice-success { color: #3b82f6 !important; font-weight: bold; }
+        .dice-failure { color: #f43f5e !important; font-weight: bold; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 600px) { body { padding: 20px 10px; } .msg-bubble { max-width: 95%; padding: 1.2rem; } .msg-text { font-size: 1rem; } }
     </style>
 </head>
-<body>
+<body class="${bodyClass}">
     <div class="container">
         <h1 style="text-align: center; margin-bottom: 2rem;">${projectNameInput.value || ''}</h1>
         ${entriesHtml}
@@ -605,7 +635,7 @@ function generateExportHtml() {
     `;
 }
 
-// --- File Handling ---
+// --- Interaction Logic ---
 
 dropArea.onclick = () => fileInput.click();
 dropArea.ondragover = (e) => { e.preventDefault(); dropArea.style.borderColor = 'var(--primary-color)'; };
@@ -624,9 +654,7 @@ function showEditor() {
 }
 
 function goBackToTop() {
-    if (logEntries.length > 0 && !confirm('編集中の内容は自動保存されていますが、トップ画面に戻りますか？')) {
-        return;
-    }
+    if (logEntries.length > 0 && !confirm('編集中の内容は自動保存されていますが、トップ画面に戻りますか？')) { return; }
     uploadSection.style.display = 'block';
     editorContainer.classList.remove('visible');
     backToTopBtn.style.display = 'none';
@@ -634,33 +662,18 @@ function goBackToTop() {
 
 backToTopBtn.onclick = goBackToTop;
 
-// --- Tab Switching ---
-
 function switchUploadTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
-    });
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
     event.currentTarget.classList.add('active');
 }
 
 parsePasteBtn.onclick = () => {
     const htmlText = pasteInput.value.trim();
-    if (!htmlText) {
-        alert('HTMLを貼り付けてください。');
-        return;
-    }
-    
+    if (!htmlText) { alert('HTMLを貼り付けてください。'); return; }
     logEntries = parseCocofoliaLog(htmlText);
-    if (logEntries.length === 0) {
-        alert('ログの解析に失敗しました。正しいHTMLか確認してください。');
-        return;
-    }
-    showEditor();
+    renderLog(); showEditor();
 };
 
 window.switchUploadTab = switchUploadTab;

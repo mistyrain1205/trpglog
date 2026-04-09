@@ -1,7 +1,8 @@
 :root {
-  --primary-color: #8b4513; /* Saddle Brown */
+  /* Default: Natural Wood Theme */
+  --primary-color: #8b4513;
   --primary-hover: #5d4037;
-  --bg-color: #f5f5f5;
+  --bg-color: #efebe9;
   --wood-dark: #3e2723;
   --wood-light: #d7ccc8;
   --paper-bg: #fdf6e3;
@@ -9,6 +10,100 @@
   --text-muted: #6d4c41;
   --border-color: #d7ccc8;
   --accent-color: #4e342e;
+  --bubble-bg: #ffffff;
+  --panel-bg: var(--wood-dark);
+  --panel-text: #efebe9;
+  --bg-pattern-opacity: 0.5;
+}
+
+/* Midnight Noir (Premium Glassmorphism) */
+body.theme-midnight {
+  --primary-color: #3b82f6; 
+  --primary-hover: #2563eb;
+  --bg-color: #0f172a;
+  --wood-dark: #1e293b;
+  --wood-light: #334155;
+  --paper-bg: rgba(30, 41, 59, 0.7); /* Translucent */
+  --text-color: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --accent-color: #0ea5e9;
+  --bubble-bg: rgba(255, 255, 255, 0.05); /* Glass effect */
+  --panel-bg: #020617;
+  --panel-text: #f8fafc;
+  --bg-pattern-opacity: 1;
+}
+
+/* Classic Parchment Theme */
+body.theme-parchment {
+  --primary-color: #795548;
+  --primary-hover: #5d4037;
+  --bg-color: #e0d0b0;
+  --wood-dark: #5d4037;
+  --wood-light: #c0ab8c;
+  --paper-bg: #f5f0e1;
+  --text-color: #3e2723;
+  --text-muted: #795548;
+  --border-color: #c0ab8c;
+  --accent-color: #3e2723;
+  --bubble-bg: #fffcf5;
+  --panel-bg: #4e342e;
+  --panel-text: #f5f0e1;
+  --bg-pattern-opacity: 0.4;
+}
+
+/* Forest Theme */
+body.theme-forest {
+  --primary-color: #10b981;
+  --primary-hover: #059669;
+  --bg-color: #064e3b;
+  --wood-dark: #022c22;
+  --wood-light: #065f46;
+  --paper-bg: #ecfdf5;
+  --text-color: #064e3b;
+  --text-muted: #065f46;
+  --border-color: #a7f3d0;
+  --accent-color: #047857;
+  --bubble-bg: #ffffff;
+  --panel-bg: #022c22;
+  --panel-text: #ecfdf5;
+  --bg-pattern-opacity: 0.3;
+}
+
+/* Sakura Theme */
+body.theme-sakura {
+  --primary-color: #f472b6;
+  --primary-hover: #db2777;
+  --bg-color: #fff1f2;
+  --wood-dark: #881337;
+  --wood-light: #fbcfe8;
+  --paper-bg: #fff5f7;
+  --text-color: #881337;
+  --text-muted: #be185d;
+  --border-color: #fce7f3;
+  --accent-color: #db2777;
+  --bubble-bg: #ffffff;
+  --panel-bg: #4c0519;
+  --panel-text: #fff1f2;
+  --bg-pattern-opacity: 0.4;
+}
+
+/* Ocean Theme */
+body.theme-ocean {
+  --primary-color: #0ea5e9;
+  --primary-hover: #0284c7;
+  --bg-color: #0c4a6e;
+  --wood-dark: #082f49;
+  --wood-light: #075985;
+  --paper-bg: #f0f9ff;
+  --text-color: #0c4a6e;
+  --text-muted: #0369a1;
+  --border-color: #bae6fd;
+  --accent-color: #0284c7;
+  --bubble-bg: #ffffff;
+  --panel-bg: #082f49;
+  --panel-text: #f0f9ff;
+  --bg-pattern-opacity: 0.3;
 }
 
 * {
@@ -18,32 +113,63 @@
 }
 
 body {
-  /* Use system fonts as fallback for offline use */
   font-family: "Noto Serif JP", "Sawarabi Mincho", "Hiragino Mincho ProN", "MS PMincho", serif;
   background-color: var(--bg-color);
-  background-image: 
-    linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
-  background-size: 20px 20px;
   color: var(--text-color);
   line-height: 1.6;
   min-height: 100vh;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* Wood texture background - Replaced external URL with CSS pattern */
+/* Background Texture Manager */
 body::before {
   content: "";
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0; width: 100%; height: 100%;
+  z-index: -1;
+  opacity: var(--bg-pattern-opacity);
+  pointer-events: none;
+}
+
+/* Wood Pattern (Default) */
+body::before {
   background: 
     repeating-linear-gradient(45deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 2px, transparent 2px, transparent 4px),
-    linear-gradient(to right, #d7ccc8 2px, transparent 2px) 0 0 / 100px 100%;
-  background-color: #efebe9;
-  z-index: -1;
-  opacity: 0.5;
+    linear-gradient(to right, var(--wood-light) 2px, transparent 2px) 0 0 / 100px 100%;
+}
+
+/* Midnight - PREMIUM INITIAL PROPOSAL GRADIENT */
+body.theme-midnight::before {
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
+    linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  opacity: 1;
+}
+
+/* Parchment (Grain) */
+body.theme-parchment::before {
+  background: radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px);
+  background-size: 6px 6px;
+}
+
+/* Forest */
+body.theme-forest::before {
+  background: radial-gradient(circle at 10px 10px, rgba(255,255,255,0.05) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Sakura */
+body.theme-sakura::before {
+  background: radial-gradient(circle, #fbcfe8 2px, transparent 0);
+  background-size: 32px 32px;
+}
+
+/* Ocean */
+body.theme-ocean::before {
+  background: 
+    radial-gradient(ellipse at 50% 100%, rgba(255,255,255,0.05) 20%, transparent 80%);
+  background-size: 100px 40px;
 }
 
 .container {
@@ -66,26 +192,22 @@ h1 {
   margin-bottom: 0.5rem;
 }
 
-.subtitle {
-  color: var(--text-muted);
-  font-size: 1.2rem;
-  font-style: italic;
-}
-
-/* Upload Section - Wooden Box Style */
+/* Upload Section */
 .upload-section {
-  background: #fff;
-  /* CSS-based wood pattern */
-  background-image: 
-    repeating-linear-gradient(to bottom, transparent, transparent 40px, rgba(0,0,0,0.03) 40px, rgba(0,0,0,0.03) 41px),
-    repeating-linear-gradient(to right, transparent, transparent 100px, rgba(0,0,0,0.03) 100px, rgba(0,0,0,0.03) 101px);
-  border: 8px solid var(--wood-dark);
-  border-radius: 4px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.2), inset 0 0 100px rgba(0,0,0,0.05);
-  padding: 2rem 4rem 4rem 4rem;
+  background: var(--bubble-bg);
+  backdrop-filter: blur(10px);
+  border: 4px solid var(--wood-dark);
+  border-radius: 8px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  padding: 3rem;
   text-align: center;
   margin-bottom: 3rem;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.theme-midnight .upload-section {
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03);
 }
 
 .upload-tabs {
@@ -114,17 +236,13 @@ h1 {
   color: #fff;
 }
 
-.tab-content {
-  display: none;
-}
-
-.tab-content.active {
-  display: block;
+.theme-midnight .tab-btn.active {
+  background: var(--primary-color);
 }
 
 .upload-area {
-  border: 3px dashed var(--wood-light);
-  background: rgba(255,255,255,0.8);
+  border: 2px dashed var(--wood-light);
+  background: rgba(255,255,255,0.02);
   border-radius: 8px;
   padding: 4rem;
   cursor: pointer;
@@ -134,11 +252,12 @@ h1 {
   width: 100%;
   height: 200px;
   padding: 1rem;
-  border: 2px solid var(--wood-light);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-family: monospace;
   font-size: 0.9rem;
-  background: #fff;
+  background: var(--bubble-bg);
+  color: var(--text-color);
   resize: vertical;
 }
 
@@ -160,175 +279,126 @@ h1 {
 /* Log Preview - Paper Style */
 .log-preview {
   background: var(--paper-bg);
-  /* CSS paper texture */
-  background-image: linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
-  background-size: 100% 2em;
-  border-radius: 2px;
-  box-shadow: 2px 5px 20px rgba(0,0,0,0.1), 0 0 50px rgba(0,0,0,0.05) inset;
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
   padding: 3rem;
   max-height: 85vh;
   overflow-y: auto;
-  border: 1px solid #e0d5c1;
+  border: 1px solid var(--border-color);
 }
 
 /* Chat Entry Styling */
 .chat-entry {
   margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(128,128,128,0.1);
 }
 
 .chat-bubble {
-  background: #fff;
+  background: var(--bubble-bg);
+  backdrop-filter: blur(10px);
   padding: 1.2rem 1.5rem;
-  border-radius: 4px 20px 20px 20px;
-  border: 1px solid #ddd;
-  box-shadow: 3px 3px 0 rgba(0,0,0,0.05);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 4px 4px 15px rgba(0,0,0,0.05);
   display: inline-block;
   max-width: 90%;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chat-bubble:hover {
+  transform: scale(1.01);
+  border-color: var(--accent-color);
 }
 
 .chat-content {
   font-size: 1.1rem;
-  color: #333;
+  color: var(--text-color);
 }
 
 .chat-image {
   margin-top: 1rem;
-  border-radius: 4px;
+  border-radius: 8px;
   max-width: 100%;
 }
 
-.dice-success {
-  color: #1a73e8 !important; /* Blue */
-  font-weight: bold;
-}
+.dice-success { color: #3b82f6 !important; font-weight: bold; }
+.dice-failure { color: #f43f5e !important; font-weight: bold; }
 
-.dice-failure {
-  color: #d93025 !important; /* Red */
-  font-weight: bold;
-}
-
-/* Control Panel - Wood Board Style */
+/* Control Panel */
 .control-panel {
-  background: var(--wood-dark);
-  background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px);
-  background-size: 50px 100%;
-  border-radius: 8px;
+  background: var(--panel-bg);
+  border-radius: 12px;
   padding: 2rem;
-  color: #efebe9;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  color: var(--panel-text);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
   position: sticky;
   top: 2rem;
   height: fit-content;
+  border: 1px solid rgba(255,255,255,0.05);
 }
 
 .control-panel label {
   display: block;
   font-size: 0.85rem;
   margin-bottom: 0.5rem;
-  color: #d7ccc8;
+  color: var(--text-muted);
   font-weight: bold;
 }
 
 .control-panel input[type="text"],
+.control-panel select,
 .control-panel textarea {
   width: 100%;
   padding: 0.8rem;
-  background: var(--paper-bg);
-  border: 1px solid #c2b9a7;
-  border-radius: 4px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
   font-family: inherit;
   font-size: 1rem;
-  color: #2c1810;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-  transition: all 0.2s;
+  color: var(--text-color);
   margin-bottom: 1.2rem;
-}
-
-.control-panel input[type="text"]:focus,
-.control-panel textarea:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 0 8px rgba(139, 69, 19, 0.3);
-}
-
-.control-panel input[type="color"] {
-  height: 45px;
-  border: 2px solid #c2b9a7;
-  cursor: pointer;
 }
 
 .btn {
   background: var(--primary-color);
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 1rem;
   font-weight: 700;
   width: 100%;
   margin-bottom: 1rem;
   cursor: pointer;
-  box-shadow: 0 4px 0 #5d4037;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.1s, box-shadow 0.1s;
+  transition: transform 0.1s;
 }
 
-.btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 #5d4037;
-}
+.btn:active { transform: translateY(2px); }
 
 .btn-secondary {
-  background: #a1887f;
-  box-shadow: 0 4px 0 #6d4c41;
+  background: var(--wood-light);
+  color: var(--wood-dark);
 }
 
-
+.theme-midnight .btn-secondary {
+  background: #334155;
+  color: #fff;
+}
 
 /* Mobile Responsiveness */
 @media (max-width: 900px) {
-  .editor-container {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-  
-  .control-panel {
-    position: static;
-    order: -1; /* Controls on top for mobile */
-  }
+  .editor-container { grid-template-columns: 1fr; gap: 2rem; }
+  .control-panel { position: static; order: -1; }
 }
 
-@media (max-width: 600px) {
-  .container {
-    padding: 1rem;
-  }
-  
-  h1 {
-    font-size: 2rem;
-  }
-  
-  .upload-area {
-    padding: 2rem;
-  }
-  
-  .log-preview {
-    padding: 1.5rem;
-  }
-  
-  .chat-bubble {
-    max-width: 100%;
-  }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: var(--wood-dark); }
-::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 5px; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--panel-bg); }
+::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px; }
